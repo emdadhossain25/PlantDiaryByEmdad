@@ -20,4 +20,8 @@ class ExampleUnitTest {
         assertEquals(3,1+2)
     }
 
+    @Test
+    fun addTwoAndThree_EqualFive() {
+        assertEquals(5,2+3)
+    }
 }
