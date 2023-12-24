@@ -29,4 +29,10 @@ class ExampleUnitTest {
     fun addThreeAndThree_isEqualSix() {
         assertEquals(6,3+3)
     }
+
+    @Test
+    fun confirmEasternRedbud_outputsEasternRedbud(){
+        var plant:Plant = Plant("Cercis","canadesis","Eastern Redbud")
+        assertEquals("Eastern Redbud",plant.toString())
+    }
 }
