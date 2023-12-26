@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Plant Diary By Emdad</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="zeropointzero">0.0</string>
+
 </resources>
