@@ -17,4 +17,15 @@ import org.junit.rules.TestRule
  */
 class PlantDataUnitTest {
 
+
+    @get:Rule
+    var rule: TestRule = InstantTaskExecutorRule()
+    lateinit var mvm: MainViewModel
+
+    @Test
+    fun confirmEasternRedbud_outputsEasternRedbud() {
+        var plant: Plant = Plant("Cercis", "canadesis", "Eastern Redbud")
+        assertEquals("Eastern Redbud", plant.toString())
+    }
+
 }
