@@ -17,5 +17,4 @@ import org.junit.rules.TestRule
  */
 class PlantDataUnitTest {
 
-
 }
