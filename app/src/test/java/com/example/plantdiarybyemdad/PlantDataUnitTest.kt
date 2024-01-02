@@ -61,7 +61,8 @@ class PlantDataUnitTest {
         allPlants.add(whiteOak)
 
         allPlantsLiveData.postValue(allPlants)
-        every { plantService.fetchPlants(any<String>()) } returns allPlantsLiveData
+        every { plantService.fetchPlants(or("Redbud","Quercus")) } returns allPlantsLiveData // redbud or qeurcus return allplantsLiveData
+        every { plantService.fetchPlants(not(or("Redbud","Quercus"))) } returns MutableLiveData<ArrayList<Plant>>() // anything but not redbud or quercus return empty live data
         mvm.plantService=plantService
     }
 
