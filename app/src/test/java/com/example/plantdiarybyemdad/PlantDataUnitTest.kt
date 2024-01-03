@@ -5,8 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import com.example.plantdiarybyemdad.dto.Plant
 import com.example.plantdiarybyemdad.service.PlantService
 import com.example.plantdiarybyemdad.ui.main.MainViewModel
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -24,7 +26,7 @@ class PlantDataUnitTest {
 
     @get:Rule
     var rule: TestRule =
-        InstantTaskExecutorRule() // this will make testing live data observables a little bit easier
+        InstantTaskExecutorRule() // this will make testing live data observables a little bit easier for using observeForever
     lateinit var mvm: MainViewModel
 
     var plantService = mockk<PlantService>()
@@ -40,6 +42,13 @@ class PlantDataUnitTest {
         givenAFeedOfMockedPlantDataAreAvailable()
         whenSearchForRedbud()
         thenResultContainsEasternRedbud()
+        thenVerifyFunctionsInvoked()
+    }
+
+    private fun thenVerifyFunctionsInvoked() {
+        verify { plantService.fetchPlants("Redbud") } // was called verify whenSearchForRedbud() called plantSevice.fetchplants("Redbud")
+        verify(exactly = 0){plantService.fetchPlants("Maple")} // was never called
+        confirmVerified(plantService) // confirm recorded calls are verified correctly
     }
 
     private fun givenAFeedOfMockedPlantDataAreAvailable() {
