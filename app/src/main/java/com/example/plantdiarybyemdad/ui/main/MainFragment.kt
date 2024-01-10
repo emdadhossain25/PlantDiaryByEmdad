@@ -18,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.plantdiarybyemdad.Manifest
 import com.example.plantdiarybyemdad.R
 
 class MainFragment : Fragment() {
