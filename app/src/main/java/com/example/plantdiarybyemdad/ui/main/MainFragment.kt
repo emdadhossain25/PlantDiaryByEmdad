@@ -4,10 +4,8 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.provider.MediaStore
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,12 +15,13 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.plantdiarybyemdad.Manifest
 import com.example.plantdiarybyemdad.R
 
 class MainFragment : Fragment() {
-
     private val CAMERA_REQUEST_CODE: Int = 1998
     val CAMERA_PERMISSION_REQUEST_CODE = 1997
 
@@ -41,33 +40,37 @@ class MainFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         var root = inflater.inflate(R.layout.fragment_main, container, false)
         actPlantName = root.findViewById(R.id.actPlantName)
         btnTakePhoto = root.findViewById(R.id.btnTakePhoto)
         imgPlant = root.findViewById(R.id.imgPlant)
         return root
-
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.plants.observe(viewLifecycleOwner, Observer { plants ->
-            actPlantName?.setAdapter(
-                ArrayAdapter(
-                    requireContext(),
-                    androidx.constraintlayout.widget.R.layout.support_simple_spinner_dropdown_item,
-                    plants
+        viewModel.plants.observe(
+            viewLifecycleOwner,
+            Observer { plants ->
+                actPlantName?.setAdapter(
+                    ArrayAdapter(
+                        requireContext(),
+                        androidx.constraintlayout.widget.R.layout.support_simple_spinner_dropdown_item,
+                        plants,
+                    ),
                 )
-            )
-        })
+            },
+        )
         btnTakePhoto?.setOnClickListener {
             prepTakePhoto()
         }
-
-
     }
 
     /**
@@ -76,7 +79,7 @@ class MainFragment : Fragment() {
     private fun prepTakePhoto() {
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
-                android.Manifest.permission.CAMERA
+                android.Manifest.permission.CAMERA,
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             takePhoto()
@@ -89,7 +92,7 @@ class MainFragment : Fragment() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
@@ -101,17 +104,14 @@ class MainFragment : Fragment() {
                     Toast.makeText(
                         requireContext(),
                         "Unable to take photo without permission",
-                        Toast.LENGTH_LONG
+                        Toast.LENGTH_LONG,
                     ).show()
                 }
-
             }
         }
-
     }
 
     private fun takePhoto() {
-
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             takePictureIntent.resolveActivity(requireContext().packageManager)?.also {
                 startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE)
@@ -119,7 +119,11 @@ class MainFragment : Fragment() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+    ) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
             if (requestCode == CAMERA_REQUEST_CODE) {
@@ -129,5 +133,4 @@ class MainFragment : Fragment() {
             }
         }
     }
-
 }

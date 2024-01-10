@@ -18,8 +18,6 @@ import org.junit.rules.TestRule
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class PlantDataIntegrationTest {
-
-
     @get:Rule
     var rule: TestRule =
         InstantTaskExecutorRule() // this will make testing live data observables a little bit easier for using observeForever
@@ -40,11 +38,9 @@ class PlantDataIntegrationTest {
         thenResultContainsEasternRedbud()
     }
 
-
     private fun givenFeedOfPlantsDataAvailable() {
         mvm = MainViewModel()
     }
-
 
     private fun whenSearchForRedbud() {
         mvm.fetchPlants("Redbud")
@@ -64,7 +60,6 @@ class PlantDataIntegrationTest {
         }
     }
 
-
     @Test
     fun searchForGarbage_returnsNothing() {
         givenFeedOfPlantsDataAvailable()
@@ -81,6 +76,4 @@ class PlantDataIntegrationTest {
             assertEquals(0, it.size)
         }
     }
-
-
 }

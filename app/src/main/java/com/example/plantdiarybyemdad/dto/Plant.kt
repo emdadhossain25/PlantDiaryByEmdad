@@ -6,7 +6,7 @@ data class Plant(
     var genus: String,
     var species: String,
     var common: String,
-    @SerializedName("id") var id: Int = 0
+    @SerializedName("id") var id: Int = 0,
 ) {
     override fun toString(): String {
         return common
