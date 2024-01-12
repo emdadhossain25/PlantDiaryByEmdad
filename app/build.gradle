@@ -6,10 +6,14 @@ plugins {
 }
 
 
+
 android {
     namespace 'com.example.plantdiarybyemdad'
     compileSdk 34
 
+    productFlavors{
+
+    }
     defaultConfig {
         applicationId "com.example.plantdiarybyemdad"
         minSdk 24
@@ -22,7 +26,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
@@ -15,12 +16,18 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.plantdiarybyemdad.R
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class MainFragment : Fragment() {
+    private val SAVE_IMAGE_REQUEST_CODE = 1999
+    private lateinit var currentPhotoPath: String
     private val CAMERA_REQUEST_CODE: Int = 1998
     val CAMERA_PERMISSION_REQUEST_CODE = 1997
 
@@ -112,8 +119,22 @@ class MainFragment : Fragment() {
 
     private fun takePhoto() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            takePictureIntent.resolveActivity(requireContext().packageManager)?.also {
-                startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE)
+            takePictureIntent.resolveActivity(requireContext().packageManager)
+            if (takePictureIntent == null) {
+                Toast.makeText(requireContext(), "Unable to save photo", Toast.LENGTH_LONG).show()
+            } else {
+                //if we are here we have a valid intent
+                val photoFile: File = createImageFile()
+                photoFile?.also {
+                    val photoUri = FileProvider.getUriForFile(
+                        requireContext(),
+                        "com.example.plantdiarybyemdad",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFile)
+
+                    startActivityForResult(takePictureIntent, SAVE_IMAGE_REQUEST_CODE)
+                }
             }
         }
     }
@@ -129,7 +150,20 @@ class MainFragment : Fragment() {
                 // now we can get the thumbnail
                 val imageBitmap = data!!.extras!!.get("data") as Bitmap
                 imgPlant?.setImageBitmap(imageBitmap)
+            } else if (requestCode == SAVE_IMAGE_REQUEST_CODE) {
+                Toast.makeText(requireContext(), "Image Saved", Toast.LENGTH_LONG).show()
             }
+        }
+    }
+
+
+    private fun createImageFile(): File {
+        //generate a unique filename with date.
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        // get access to the directory hwere we can write pictures.
+        val storageDir: File? = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile("PlantDiary${timeStamp}", "jpg", storageDir).apply {
+            currentPhotoPath = absolutePath
         }
     }
 }
