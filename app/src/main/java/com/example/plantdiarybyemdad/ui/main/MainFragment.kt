@@ -1,9 +1,11 @@
 package com.example.plantdiarybyemdad.ui.main
 
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -26,6 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 class MainFragment : Fragment() {
+    private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
     private val SAVE_IMAGE_REQUEST_CODE = 1999
     private lateinit var currentPhotoPath: String
     private val CAMERA_REQUEST_CODE: Int = 1998
@@ -38,6 +41,7 @@ class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     var actPlantName: AutoCompleteTextView? = null
     var btnTakePhoto: ImageButton? = null
+    var btnLogon: ImageButton? = null
     var imgPlant: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +57,7 @@ class MainFragment : Fragment() {
         var root = inflater.inflate(R.layout.fragment_main, container, false)
         actPlantName = root.findViewById(R.id.actPlantName)
         btnTakePhoto = root.findViewById(R.id.btnTakePhoto)
+        btnLogon = root.findViewById(R.id.btnLogon)
         imgPlant = root.findViewById(R.id.imgPlant)
         return root
     }
@@ -77,6 +82,15 @@ class MainFragment : Fragment() {
         btnTakePhoto?.setOnClickListener {
             prepTakePhoto()
         }
+
+        btnLogon?.setOnClickListener {
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+                type = "image/*"
+                startActivityForResult(this, IMAGE_GALLERY_REQUEST_CODE)
+            }
+        }
+
+
     }
 
     /**
@@ -139,6 +153,7 @@ class MainFragment : Fragment() {
         }
     }
 
+    @SuppressLint("NewApi")
     override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
@@ -152,6 +167,15 @@ class MainFragment : Fragment() {
                 imgPlant?.setImageBitmap(imageBitmap)
             } else if (requestCode == SAVE_IMAGE_REQUEST_CODE) {
                 Toast.makeText(requireContext(), "Image Saved", Toast.LENGTH_LONG).show()
+            } else if (requestCode == IMAGE_GALLERY_REQUEST_CODE) {
+                if (data != null && data.data != null) {
+                    //data.data is the uri
+                    val image = data.data
+                    val source =
+                        ImageDecoder.createSource(requireActivity().contentResolver, image!!)
+                    val bitmap = ImageDecoder.decodeBitmap(source)
+                    imgPlant?.setImageBitmap(bitmap)
+                }
             }
         }
     }
