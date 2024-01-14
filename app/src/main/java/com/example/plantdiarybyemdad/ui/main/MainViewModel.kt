@@ -7,16 +7,21 @@ import com.example.plantdiarybyemdad.service.PlantService
 
 class MainViewModel : ViewModel() {
     private var _plants: MutableLiveData<ArrayList<Plant>> = MutableLiveData<ArrayList<Plant>>()
-    var plantService:PlantService = PlantService()
+    var plantService: PlantService = PlantService()
 
     init {
         fetchPlants("e")
     }
+
     fun fetchPlants(plantName: String) {
-        _plants=plantService.fetchPlants(plantName)
+        _plants = plantService.fetchPlants(plantName)
     }
 
-    internal var plants:MutableLiveData<ArrayList<Plant>>
-    get() {return _plants}
-    set(value) {_plants=value}
+    internal var plants: MutableLiveData<ArrayList<Plant>>
+        get() {
+            return _plants
+        }
+        set(value) {
+            _plants = value
+        }
 }

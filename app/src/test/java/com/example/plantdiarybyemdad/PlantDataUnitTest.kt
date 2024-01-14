@@ -22,8 +22,6 @@ import org.junit.rules.TestRule
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class PlantDataUnitTest {
-
-
     @get:Rule
     var rule: TestRule =
         InstantTaskExecutorRule() // this will make testing live data observables a little bit easier for using observeForever
@@ -47,7 +45,7 @@ class PlantDataUnitTest {
 
     private fun thenVerifyFunctionsInvoked() {
         verify { plantService.fetchPlants("Redbud") } // was called verify whenSearchForRedbud() called plantSevice.fetchplants("Redbud")
-        verify(exactly = 0){plantService.fetchPlants("Maple")} // was never called
+        verify(exactly = 0) { plantService.fetchPlants("Maple") } // was never called
         confirmVerified(plantService) // confirm recorded calls are verified correctly
     }
 
@@ -70,9 +68,11 @@ class PlantDataUnitTest {
         allPlants.add(whiteOak)
 
         allPlantsLiveData.postValue(allPlants)
-        every { plantService.fetchPlants(or("Redbud","Quercus")) } returns allPlantsLiveData // redbud or qeurcus return allplantsLiveData
-        every { plantService.fetchPlants(not(or("Redbud","Quercus"))) } returns MutableLiveData<ArrayList<Plant>>() // anything but not redbud or quercus return empty live data
-        mvm.plantService=plantService
+        every { plantService.fetchPlants(or("Redbud", "Quercus")) } returns allPlantsLiveData // redbud or qeurcus return allplantsLiveData
+        every {
+            plantService.fetchPlants(not(or("Redbud", "Quercus")))
+        } returns MutableLiveData<ArrayList<Plant>>() // anything but not redbud or quercus return empty live data
+        mvm.plantService = plantService
     }
 
     private fun whenSearchForRedbud() {
@@ -93,7 +93,6 @@ class PlantDataUnitTest {
         assertTrue(redbudFound)
     }
 
-
     @Test
     fun searchForGarbage_returnsNothing() {
         givenAFeedOfMockedPlantDataAreAvailable()
@@ -110,6 +109,4 @@ class PlantDataUnitTest {
             assertEquals(0, it.size)
         }
     }
-
-
 }
