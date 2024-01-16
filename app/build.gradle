@@ -67,4 +67,6 @@ dependencies {
     testImplementation 'androidx.arch.core:core-testing:2.2.0' // unit test implementation to create rule and observeForever
     androidTestImplementation 'androidx.arch.core:core-testing:2.2.0' // instrumentation test implementation to create rule and observeForever
     testImplementation "io.mockk:mockk:1.9"
+
+    implementation "com.google.android.gms:play-services-location:21.0.1"
 }
