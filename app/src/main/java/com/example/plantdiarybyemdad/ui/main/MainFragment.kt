@@ -16,12 +16,15 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.location.LocationManagerCompat.requestLocationUpdates
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.plantdiarybyemdad.Manifest
 import com.example.plantdiarybyemdad.R
 import java.io.File
 import java.text.SimpleDateFormat
@@ -33,16 +36,20 @@ class MainFragment : Fragment() {
     private lateinit var currentPhotoPath: String
     private val CAMERA_REQUEST_CODE: Int = 1998
     val CAMERA_PERMISSION_REQUEST_CODE = 1997
+    private val LOCATION_PERMISSION_REQUEST_CODE = 2000
 
     companion object {
         fun newInstance() = MainFragment()
     }
 
     private lateinit var viewModel: MainViewModel
+    private lateinit var locationViewModel: LocationViewModel
     var actPlantName: AutoCompleteTextView? = null
     var btnTakePhoto: ImageButton? = null
     var btnLogon: ImageButton? = null
     var imgPlant: ImageView? = null
+    var lbllongitudeValue: TextView? = null
+    var lblLatitudeValue: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +66,8 @@ class MainFragment : Fragment() {
         btnTakePhoto = root.findViewById(R.id.btnTakePhoto)
         btnLogon = root.findViewById(R.id.btnLogon)
         imgPlant = root.findViewById(R.id.imgPlant)
+        lblLatitudeValue = root.findViewById(R.id.lblLatitudeValue)
+        lbllongitudeValue = root.findViewById(R.id.lbllongitudeValue)
         return root
     }
 
@@ -90,7 +99,31 @@ class MainFragment : Fragment() {
             }
         }
 
+        prepRequestLocationUpdates()
 
+
+    }
+
+    private fun prepRequestLocationUpdates() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            requestLocationUpdates()
+        } else {
+            val permissionRequest = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION)
+            requestPermissions(permissionRequest, LOCATION_PERMISSION_REQUEST_CODE)
+        }
+
+    }
+
+    fun requestLocationUpdates() {
+        locationViewModel = ViewModelProvider(this).get(LocationViewModel::class.java)
+        locationViewModel.getLocationLiveData().observe(viewLifecycleOwner, Observer {
+            lblLatitudeValue?.text = it.latitude
+            lbllongitudeValue?.text = it.longitude
+        })
     }
 
     /**
@@ -124,6 +157,18 @@ class MainFragment : Fragment() {
                     Toast.makeText(
                         requireContext(),
                         "Unable to take photo without permission",
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
+            }
+
+            CAMERA_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    requestLocationUpdates()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Unable to update location without permission",
                         Toast.LENGTH_LONG,
                     ).show()
                 }

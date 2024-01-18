@@ -1,5 +1,6 @@
 package com.example.plantdiarybyemdad.ui.main
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import androidx.lifecycle.LiveData
@@ -16,14 +17,23 @@ class LocationLiveData(context: Context) : LiveData<LocationDetails>() {
 
     override fun onInactive() {
         super.onInactive()
+        //turn off location updates
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
+    @SuppressLint("MissingPermission")
     override fun onActive() {
         super.onActive()
+        fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location ->
+            location.also {
+                setLocationData(it)
+            }
+        }
         startLocationUpdates()
     }
 
 
+    @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null)
     }
@@ -33,7 +43,7 @@ class LocationLiveData(context: Context) : LiveData<LocationDetails>() {
         override fun onLocationResult(locationResult: LocationResult) {
             super.onLocationResult(locationResult)
             locationResult ?: return
-            for (location in locationResult.locations){
+            for (location in locationResult.locations) {
                 setLocationData(location)
             }
         }
@@ -43,7 +53,7 @@ class LocationLiveData(context: Context) : LiveData<LocationDetails>() {
      * if we received a location update this function will be called
      */
     private fun setLocationData(location: Location) {
-        value= LocationDetails(location.longitude.toString(),location.latitude.toString())
+        value = LocationDetails(location.longitude.toString(), location.latitude.toString())
     }
 
     companion object {
